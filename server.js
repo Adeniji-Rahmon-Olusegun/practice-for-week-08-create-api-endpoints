@@ -55,6 +55,7 @@ const server = http.createServer((req, res) => {
     if (req.method === 'GET' && req.url === '/dogs') {
       // Your code here
       let resBody = JSON.stringify(dogs, null, 4);
+      res.setHeader("Content-Type", "application/json");
       res.write(resBody);
 
       return res.end();
@@ -68,6 +69,8 @@ const server = http.createServer((req, res) => {
         // Your code here
         let dog = dogs.find(dog => dog.dogId === Number(dogId));
 
+        res.statusCode = 201;
+        res.setHeader("Content-Type", "application/json");
         res.write(JSON.stringify(dog, null, 4));
       }
 
@@ -83,7 +86,7 @@ const server = http.createServer((req, res) => {
       let obj = {
         dogId: dogId,
         name: name,
-        age: age
+        age: Number(age)
       }
 
       dogs.push(obj);
@@ -102,13 +105,17 @@ const server = http.createServer((req, res) => {
       if (urlParts.length === 3) {
         const dogId = urlParts[2];
         // Your code here
-        let dog = dogs.find(dog => dog.dogId === Number(dogId));
+        let dogIndex = dogs.findIndex(dog => dog.dogId === Number(dogId));
 
-        dog.name = req.body.name;
-        dog.age = req.body.age;
+        dogs[dogIndex].name = req.body.name;
+        dogs[dogIndex].age = Number(req.body.age);
 
-        res.statusCode = 302;
-        res.setHeader("Location", `/dogs/${dogId}`);
+        res.statusCode = 201;
+        res.setHeader("Content-Type", "application/json");
+        
+        let body = JSON.stringify(dogs[dogIndex]);
+        //console.log(body);
+        res.write(body);
       }
       return res.end();
     }
@@ -122,10 +129,11 @@ const server = http.createServer((req, res) => {
         let dogIndex = dogs.findIndex(dog => dog.dogId === Number(dogId));
         let dog = dogs.splice(dogIndex, 1);
 
-        res.write(`Successfully deleted: ${dog.name}`);
-        res.write("Sorry to see you go (:.");
+        res.setHeader("Content-Type", "application/json");
+        let resB = JSON.stringify({ message: 'Successfully deleted'});
+        res.write(resB);
       }
-
+      
       return res.end();
     }
 
