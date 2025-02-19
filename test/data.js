@@ -43,6 +43,25 @@ const newDogBody4 = {
     "age": 20
 };
 
+const data = {
+    name: "Fleddy",
+    age: 5
+}
+
+let params = new URLSearchParams(data);
+
+const options = {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+    },
+
+    body: params.toString()
+};
+
+console.log(params.toString())
+fetch("/dogs", options);
+
 module.exports = {
     dogs,
     newDogBody1,

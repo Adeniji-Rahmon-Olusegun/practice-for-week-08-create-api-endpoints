@@ -54,6 +54,8 @@ const server = http.createServer((req, res) => {
     // GET /dogs
     if (req.method === 'GET' && req.url === '/dogs') {
       // Your code here
+      let resBody = JSON.stringify(dogs, null, 4);
+      res.write(resBody);
 
       return res.end();
     }
@@ -64,7 +66,11 @@ const server = http.createServer((req, res) => {
       if (urlParts.length === 3) {
         const dogId = urlParts[2];
         // Your code here
+        let dog = dogs.find(dog => dog.dogId === Number(dogId));
+
+        res.write(JSON.stringify(dog, null, 4));
       }
+
       return res.end();
     }
 
@@ -72,6 +78,21 @@ const server = http.createServer((req, res) => {
     if (req.method === 'POST' && req.url === '/dogs') {
       const { name, age } = req.body;
       // Your code here
+      let dogId = getNewDogId();
+
+      let obj = {
+        dogId: dogId,
+        name: name,
+        age: age
+      }
+
+      dogs.push(obj);
+
+      res.statusCode = 302;
+      res.setHeader("Location", `/dogs/${dogId}`);
+
+      //res.write(JSON.stringify(dogs, null, 4));
+
       return res.end();
     }
 
@@ -81,6 +102,13 @@ const server = http.createServer((req, res) => {
       if (urlParts.length === 3) {
         const dogId = urlParts[2];
         // Your code here
+        let dog = dogs.find(dog => dog.dogId === Number(dogId));
+
+        dog.name = req.body.name;
+        dog.age = req.body.age;
+
+        res.statusCode = 302;
+        res.setHeader("Location", `/dogs/${dogId}`);
       }
       return res.end();
     }
@@ -91,7 +119,13 @@ const server = http.createServer((req, res) => {
       if (urlParts.length === 3) {
         const dogId = urlParts[2];
         // Your code here
+        let dogIndex = dogs.findIndex(dog => dog.dogId === Number(dogId));
+        let dog = dogs.splice(dogIndex, 1);
+
+        res.write(`Successfully deleted: ${dog.name}`);
+        res.write("Sorry to see you go (:.");
       }
+
       return res.end();
     }
 
